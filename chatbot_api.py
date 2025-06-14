@@ -4,82 +4,81 @@ import json
 import numpy as np
 import random
 import string
+import os
 from tensorflow.keras.models import load_model
 
-# Load model
-model = load_model('chatbot_model.h5')
+# Initialize Flask app
+app = Flask(__name__)
+CORS(app)  # Enable Cross-Origin Resource Sharing
 
-# Load the intents JSON file
-with open('intents.json', encoding="utf8") as json_file:
-    data = json.load(json_file)
+# Load the trained model
+MODEL_PATH = 'chatbot_model.h5'
+model = load_model(MODEL_PATH)
 
-words = sorted(set([w.lower() for intent in data['intents'] for pattern in intent['patterns'] for w in pattern.split()]))
-classes = sorted(set([intent['tag'] for intent in data['intents']]))
+# Load intents data
+with open('intents.json', encoding="utf-8") as json_file:
+    intents = json.load(json_file)
 
+# Prepare vocabulary and classes
+words = sorted(set(
+    word.lower()
+    for intent in intents['intents']
+    for pattern in intent['patterns']
+    for word in pattern.translate(str.maketrans('', '', string.punctuation)).split()
+))
+classes = sorted(set(intent['tag'] for intent in intents['intents']))
+
+# Helper functions
 def clean_up_sentence(sentence):
     sentence = sentence.translate(str.maketrans('', '', string.punctuation))
-    sentence_words = sentence.split()
-    sentence_words = [word.lower() for word in sentence_words]
-    return sentence_words
+    return [word.lower() for word in sentence.split()]
 
-def is_known_sentence(sentence, words):
-    sentence_words = clean_up_sentence(sentence)
-    for word in sentence_words:
-        if word not in words:
-            return False
-    return True
+def is_known_sentence(sentence, vocab):
+    return all(word in vocab for word in clean_up_sentence(sentence))
 
-def bow(sentence, words):
+def bow(sentence, vocab):
     sentence_words = clean_up_sentence(sentence)
-    bag = [0] * len(words)
-    for s in sentence_words:
-        for i, w in enumerate(words):
-            if w == s:
-                bag[i] = 1
-    return np.array(bag)
+    return np.array([1 if word in sentence_words else 0 for word in vocab])
 
 def predict_class(sentence):
     if not is_known_sentence(sentence, words):
         return []
-    p = bow(sentence, words)
-    res = model.predict(np.array([p]))[0]
-    ERROR_THRESHOLD = 0.4
-    results = [[i, r] for i, r in enumerate(res) if r > ERROR_THRESHOLD]
-    if not results:
-        return []
-    results.sort(key=lambda x: x[1], reverse=True)
-    return [{"intent": classes[r[0]], "probability": str(r[1])} for r in results]
 
-def get_response(intents_list, intents_json):
-    if intents_list:
-        tag = intents_list[0]['intent']
-        for i in intents_json['intents']:
-            if i['tag'] == tag:
-                result = random.choice(i['responses'])
-                break
-        return result
-    else:
+    input_data = np.array([bow(sentence, words)])
+    predictions = model.predict(input_data, verbose=0)[0]
+
+    ERROR_THRESHOLD = 0.4
+    results = [
+        {"intent": classes[i], "probability": str(prob)}
+        for i, prob in enumerate(predictions)
+        if prob > ERROR_THRESHOLD
+    ]
+
+    return sorted(results, key=lambda x: x["probability"], reverse=True)
+
+def get_response(intents_list, intents_data):
+    if not intents_list:
         return "I'm sorry, I don't understand that."
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+    intent_tag = intents_list[0]['intent']
+    for intent in intents_data['intents']:
+        if intent['tag'] == intent_tag:
+            return random.choice(intent['responses'])
 
-# Chat Route
+    return "I'm not sure how to respond to that."
+
+# API route
 @app.route('/chat', methods=['POST'])
 def chat():
-    message = request.json.get("message")
-    
-    # Validate if message is provided
+    data = request.get_json()
+    message = data.get("message", "").strip()
+
     if not message:
         return jsonify({"response": "No message provided, please send a valid message."}), 400
-    
-    # Predict the class and get the response
-    ints = predict_class(message)
-    response = get_response(ints, data)
-    
-    # Return the response as JSON
+
+    predicted_intents = predict_class(message)
+    response = get_response(predicted_intents, intents)
+
     return jsonify({"response": response}), 200
 
-if __name__ == "__main__":
-    # Run the app on the specific IP and port
-    app.run(host='127.0.0.1', port=5000)
+
