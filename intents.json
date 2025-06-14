@@ -1,0 +1,244 @@
+{
+        "intents": [
+          {
+            "tag": "greeting",
+            "patterns": [
+              "Hi", "How are you", "Is anyone there?", "Hello", "Good day", "Whats up",
+              "Good morning", "Good evening", "hello", "hey", "what's up"
+            ],
+            "responses": ["Hello!", "Good to see you!", "Hi there, how can I help?"],
+            "context_set": ""
+          },
+          {
+            "tag": "greeting_ar",
+            "patterns": [
+              "مرحبا", "كيف حالك", "هل هناك أحد؟", "أهلاً", "يوم سعيد", "ما الأخبار؟",
+              "صباح الخير", "مساء الخير", "مرحباً", "ما الجديد؟"
+            ],
+            "responses": ["مرحباً!", "سعيد برؤيتك!", "أهلاً بك، كيف يمكنني مساعدتك؟"],
+            "context_set": ""
+          },
+          {
+            "tag": "goodbye",
+            "patterns": [
+              "cya", "See you later", "Goodbye", "I am Leaving", "Have a Good day",
+              "bye", "i have to go", "gotta go"
+            ],
+            "responses": ["Sad to see you go :(", "Talk to you later", "Goodbye!"],
+            "context_set": ""
+          },
+          {
+            "tag": "goodbye_ar",
+            "patterns": [
+              "أراك لاحقاً", "وداعاً", "أغادر الآن", "أتمنى لك يوماً سعيداً", "باي", "يجب أن أذهب", "يجب أن أرحل"
+            ],
+            "responses": ["يحزنني رؤيتك ترحل :(", "سأتحدث معك لاحقاً", "وداعاً!"],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_info",
+            "patterns": [
+              "what is autism", "Autism definition", "what is autism spectrum disorder", "asd info"
+            ],
+            "responses": [
+              "Autism, also known as Autism Spectrum Disorder (ASD), is a neurological and developmental disorder that affects communication, social interaction, and behavior. It is characterized by a range of symptoms, skills, and levels of impairment or disability.",
+              "ASD is a spectrum disorder, which means that it affects individuals differently and to varying degrees. The spectrum includes conditions that were once considered separate, such as Asperger syndrome and pervasive developmental disorder not otherwise specified (PDD-NOS)."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_info_ar",
+            "patterns": [
+              "ما هو التوحد", "تعريف التوحد", "ما هو اضطراب طيف التوحد", "معلومات عن التوحد"
+            ],
+            "responses": [
+              "التوحد، المعروف أيضًا باضطراب طيف التوحد (ASD)، هو اضطراب عصبي ونمائي يؤثر على التواصل والتفاعل الاجتماعي والسلوك. يتميز بمجموعة متنوعة من الأعراض والمهارات ومستويات من الإعاقة أو العجز.",
+              "اضطراب طيف التوحد هو اضطراب طيفي، مما يعني أنه يؤثر على الأفراد بطرق مختلفة وبدرجات متفاوتة. يشمل الطيف حالات كانت تعتبر منفصلة في السابق، مثل متلازمة أسبرجر واضطراب النمو المتفشي غير المحدد (PDD-NOS)."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_problems",
+            "patterns": [
+              "problems autistic individuals face", "challenges for autistic people", "difficulties faced by autistic individuals"
+            ],
+            "responses": [
+              "Autistic individuals may face challenges in various aspects of life, including social interactions, communication, and adapting to changes. They may experience difficulties with forming relationships, understanding social cues, and handling sensory overload.",
+              "Social difficulties: Challenges with understanding social cues, maintaining eye contact, engaging in conversations, and building relationships.",
+              "Communication challenges: Difficulties with verbal and nonverbal communication, including delayed speech, echolalia (repeating words or phrases), and difficulty understanding abstract concepts.",
+              "Behavioral challenges: Repetitive behaviors, meltdowns, and difficulty with change."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_problems_ar",
+            "patterns": [
+              "مشاكل يواجهها الأفراد المصابون بالتوحد", "تحديات للأشخاص المصابين بالتوحد" , "صعوبات يواجهها الأفراد المصابون بالتوحد"
+            ],
+            "responses": [
+              "قد يواجه الأفراد المصابون بالتوحد تحديات في مختلف جوانب الحياة، بما في ذلك التفاعلات الاجتماعية والتواصل والتكيف مع التغييرات. قد يواجهون صعوبات في تكوين العلاقات وفهم الإشارات الاجتماعية والتعامل مع التحميل الحسي الزائد.",
+              "الصعوبات الاجتماعية: تحديات في فهم الإشارات الاجتماعية، والحفاظ على التواصل البصري، والمشاركة في المحادثات، وبناء العلاقات.",
+              "تحديات التواصل: صعوبات في التواصل اللفظي وغير اللفظي، بما في ذلك تأخر الكلام، والصدى (تكرار الكلمات أو العبارات)، وصعوبة فهم المفاهيم المجردة.",
+              "مشاكل المعالجة الحسية: الحساسية المفرطة أو قلة الحساسية للمدخلات الحسية (الأصوات، الأضواء، اللمس، الأذواق، الروائح)."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_deal",
+            "patterns": [
+              "how to deal with someone with autism", "how to support someone with autism", "best practices for interacting with autism"
+              
+            ],
+            "responses": [
+              "To effectively deal with someone with autism, approach them with empathy and patience. Use clear and simple language, and be mindful of their sensory sensitivities. Establishing routines and providing predictability can be very helpful.",
+              "Support includes learning about their specific needs and preferences, avoiding sudden changes, and creating an environment that minimizes stress. Collaboration with healthcare professionals and educators can also support their development and well-being.",
+              "Solutions include providing clear communication, offering consistent routines, and using visual supports. Supportive therapies and interventions can also help address these challenges and improve overall quality of life."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_deal_ar",
+            "patterns": [
+              "كيفية التعامل مع شخص مصاب بالتوحد", "كيف تدعم شخصاً مصاباً بالتوحد", "أفضل الممارسات للتفاعل مع التوحد"
+            ],
+            "responses": [
+              "للتعامل بفعالية مع شخص مصاب بالتوحد، يجب الاقتراب منه بتعاطف وصبر. استخدم لغة واضحة وبسيطة، وكن مدركًا لحساسياته الحسية. يمكن أن يكون من المفيد إنشاء روتينات وتوفير بيئة متوقعة.",
+              "يشمل الدعم التعرف على احتياجاته وتفضيلاته الخاصة، وتجنب التغييرات المفاجئة، وخلق بيئة تقلل من التوتر. يمكن أن يدعم التعاون مع المتخصصين في الرعاية الصحية والمعلمين تطويرهم ورفاهيتهم."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_first_steps",
+            "patterns": [
+              "first steps for interacting with autistic person", "how to approach someone with autism", "initial steps with autism"
+            ],
+            "responses": [
+              "When interacting with someone with autism, it's important to be patient and understanding. Clear and direct communication is helpful, and it’s beneficial to be mindful of sensory sensitivities and avoid overwhelming stimuli.",
+              "Establishing a routine and providing structure can make interactions smoother. It’s also valuable to learn about the individual's specific needs and preferences to ensure effective communication and support."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_first_steps_ar",
+            "patterns": [
+              "أول خطوات للتفاعل مع شخص مصاب بالتوحد", "كيفية التعامل مع شخص مصاب بالتوحد", "الخطوات الأولية مع التوحد"
+            ],
+            "responses": [
+              "عند التفاعل مع شخص مصاب بالتوحد، من المهم أن تكون صبوراً ومتفهماً. يمكن أن يكون التواصل الواضح والمباشر مفيداً، ومن الأفضل أن تكون مدركاً للحساسيات الحسية وتجنب المحفزات المفرطة.",
+              "يمكن أن يساعد إنشاء روتين وتقديم هيكل معين في جعل التفاعلات أسهل. من المهم أيضًا التعرف على احتياجات وتفضيلات الشخص لضمان التواصل والدعم الفعال."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_treatment",
+            "patterns": [
+              "autism treatment", "how is autism treated", "treatment options for autism", "how to manage autism"
+            ],
+            "responses": [
+              "There is no cure for autism, but there are various treatment options that can help manage symptoms and improve quality of life. These may include behavioral therapy, speech therapy, occupational therapy, and educational interventions.",
+              "Medications may also be used to address specific symptoms such as anxiety, depression, or ADHD. It's important to work with healthcare professionals to develop a personalized treatment plan."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_treatment_ar",
+            "patterns": [
+              "علاج التوحد", "كيف يتم علاج التوحد", "خيارات العلاج للتوحد", "كيفية إدارة التوحد"
+            ],
+            "responses": [
+              "لا يوجد علاج نهائي للتوحد، ولكن هناك العديد من خيارات العلاج التي يمكن أن تساعد في إدارة الأعراض وتحسين جودة الحياة. قد تشمل هذه الخيارات العلاج السلوكي، وعلاج النطق، والعلاج الوظيفي، والتدخلات التعليمية.",
+              "قد تُستخدم الأدوية أيضًا لمعالجة أعراض معينة مثل القلق أو الاكتئاب أو اضطراب فرط الحركة ونقص الانتباه (ADHD). من المهم العمل مع المهنيين الصحيين لتطوير خطة علاجية شخصية."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_classification",
+            "patterns": [
+              "types of autism", "autism classification", "different types of autism", "types of ASD"
+            ],
+            "responses": [
+              "Autism Spectrum Disorder (ASD) is classified into several types based on symptoms and severity. These include Autism, Asperger Syndrome, and Pervasive Developmental Disorder-Not Otherwise Specified (PDD-NOS).",
+              "Asperger Syndrome is characterized by higher cognitive and language abilities compared to other forms of autism. PDD-NOS is used when an individual does not fit neatly into other categories but still shows symptoms of autism."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_classification_ar",
+            "patterns": [
+              "أنواع التوحد", "تصنيف التوحد", "أنواع التوحد المختلفة", "أنواع اضطراب طيف التوحد"
+            ],
+            "responses": [
+              "يتم تصنيف اضطراب طيف التوحد (ASD) إلى عدة أنواع بناءً على الأعراض وشدتها. تشمل هذه الأنواع التوحد، ومتلازمة أسبرجر، واضطراب النمو المتفشي غير المحدد (PDD-NOS).",
+              "تتميز متلازمة أسبرجر بقدرات معرفية ولغوية أعلى مقارنة بأشكال أخرى من التوحد. يتم استخدام PDD-NOS عندما لا يتناسب الفرد بدقة مع الفئات الأخرى ولكنه لا يزال يظهر أعراض التوحد."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_resources",
+            "patterns": [
+              "autism resources", "where can I find help for autism", "autism support services"
+            ],
+            "responses": [
+              "There are many resources available to support individuals with autism, including the Autism Society, Autistic Self Advocacy Network, and local support groups. These organizations provide information, advocacy, and services for individuals and families affected by autism.",
+              "You can also find online resources, such as the Centers for Disease Control and Prevention (CDC) and the National Autism Association, which offer comprehensive information and support related to autism."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_resources_ar",
+            "patterns": [
+              "موارد التوحد", "أين يمكنني العثور على مساعدة للتوحد", "خدمات دعم التوحد"
+            ],
+            "responses": [
+              "توجد العديد من الموارد المتاحة لدعم الأفراد المصابين بالتوحد، بما في ذلك جمعية التوحد، وشبكة الدفاع عن الذات للتوحد، ومجموعات الدعم المحلية. توفر هذه المنظمات معلومات ودعماً وخدمات للأفراد والعائلات المتأثرة بالتوحد.",
+              "يمكنك أيضاً العثور على موارد عبر الإنترنت مثل مراكز السيطرة على الأمراض والوقاية منها (CDC) والجمعية الوطنية للتوحد، والتي تقدم معلومات شاملة ودعماً متعلقاً بالتوحد."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_strengths",
+            "patterns": [
+              "strengths of autistic people", "what are the strengths of autism", "autism benefits"
+            ],
+            "responses": [
+              "Individuals with autism often exhibit unique strengths, such as attention to detail, analytical thinking, and creativity. They may have a heightened ability to focus on specific interests and excel in fields that require precise skills.",
+              "Many autistic individuals also possess exceptional skills in areas like math, music, or art. Their ability to think differently can lead to innovative solutions and contributions in various fields."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_strengths_ar",
+            "patterns": [
+              "قوة الأشخاص المصابين بالتوحد", "ما هي مزايا التوحد", "فوائد التوحد"
+            ],
+            "responses": [
+              "غالباً ما يتمتع الأفراد المصابون بالتوحد بنقاط قوة فريدة، مثل الاهتمام بالتفاصيل والتفكير التحليلي والإبداع. قد يكون لديهم قدرة متزايدة على التركيز على اهتمامات محددة والتفوق في المجالات التي تتطلب مهارات دقيقة.",
+              "كما يتمتع العديد من الأفراد المصابين بالتوحد بمهارات استثنائية في مجالات مثل الرياضيات أو الموسيقى أو الفن. قد يؤدي تفكيرهم المختلف إلى حلول مبتكرة ومساهمات في مختلف المجالات."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_symptoms",
+            "patterns": [
+              "autism symptoms", "signs of autism", "what are the symptoms of autism"
+            ],
+            "responses": [
+              "Common symptoms of autism include difficulties with social interaction, verbal and nonverbal communication, and repetitive behaviors. Individuals may also have challenges with understanding social cues and maintaining relationships.",
+              "Some individuals with autism may also experience sensory sensitivities, such as heightened or diminished responses to sensory stimuli like light, sound, or texture. Other symptoms might include a need for routine and predictable environments."
+            ],
+            "context_set": ""
+          },
+          {
+            "tag": "autism_symptoms_ar",
+            "patterns": [
+              "أعراض التوحد", "علامات التوحد", "ما هي أعراض التوحد؟"
+            ],
+            "responses": [
+              "تشمل الأعراض الشائعة للتوحد صعوبات في التفاعل الاجتماعي، والتواصل اللفظي وغير اللفظي، والسلوكيات المتكررة. قد يواجه الأفراد المصابون بالتوحد أيضاً تحديات في فهم الإشارات الاجتماعية والحفاظ على العلاقات.",
+              "قد يعاني بعض الأفراد المصابين بالتوحد أيضاً من حساسية حسية، مثل الاستجابة المفرطة أو المنخفضة للمحفزات الحسية مثل الضوء والصوت أو الملمس. تشمل الأعراض الأخرى الحاجة إلى الروتين والبيئات القابلة للتنبؤ."
+            ],
+            "context_set": ""
+          }
+        ]
+      }
+      
