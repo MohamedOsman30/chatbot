@@ -4,40 +4,20 @@ import json
 import numpy as np
 import random
 import string
-import os
-import requests  # <-- used instead of gdown
 from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
 CORS(app)
 
-# === Step 1: Download from direct Google Drive download link ===
-MODEL_URL = "https://drive.usercontent.google.com/download?id=1BVN7l4JcW72O1lO-k621wq6y0nF5J_82&export=download&authuser=0&confirm=t&uuid=d40e7f90-8243-4220-9500-7ecf3f3ed433&at=AN8xHoq_54mPXpZWhvigBncwtEfI:1749887597066"
-INTENTS_URL = "https://drive.usercontent.google.com/download?id=1i9jdXegd5wy2wBN-O3_NDtq0lbPzFgEB&export=download&authuser=0&confirm=t&uuid=fa8ecbc7-6774-4914-a911-136831e79a72&at=AN8xHoodgxRNTAeYFIpG3bfCGW-U:1749887680988"
-
+# Load model and intents from local files
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
 
-def download_file(url, dest):
-    if not os.path.exists(dest):
-        print(f"Downloading {dest}...")
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(dest, "wb") as f:
-                f.write(response.content)
-        else:
-            raise Exception(f"Failed to download {dest}: HTTP {response.status_code}")
-
-# Download both files
-download_file(MODEL_URL, MODEL_PATH)
-download_file(INTENTS_URL, INTENTS_PATH)
-
-# === Step 2: Load model and intents ===
 model = load_model(MODEL_PATH)
-
 with open(INTENTS_PATH, encoding="utf-8") as f:
     intents = json.load(f)
 
+# Preprocess vocabulary and classes
 words = sorted(set(
     word.lower()
     for intent in intents['intents']
@@ -46,7 +26,7 @@ words = sorted(set(
 ))
 classes = sorted(set(intent['tag'] for intent in intents['intents']))
 
-# === Helper functions ===
+# Helper functions
 def clean_up_sentence(sentence):
     sentence = sentence.translate(str.maketrans('', '', string.punctuation))
     return [word.lower() for word in sentence.split()]
@@ -80,7 +60,7 @@ def get_response(intents_list, intents_data):
             return random.choice(intent['responses'])
     return "I'm not sure how to respond to that."
 
-# === Chat API Route ===
+# Chat API Route
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
@@ -91,3 +71,5 @@ def chat():
     response = get_response(predicted_intents, intents)
     return jsonify({"response": response}), 200
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)
