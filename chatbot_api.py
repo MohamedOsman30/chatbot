@@ -6,14 +6,15 @@ import random
 import string
 from tensorflow.keras.models import load_model
 import os
-
+import pickle
 app = Flask(__name__)
 CORS(app)
 
 # === Paths to model and intents ===
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
-
+words = pickle.load(open('words.pkl', 'rb'))
+classes = pickle.load(open('classes.pkl', 'rb'))
 # === Load the model ===
 model = None
 model_load_error = None
