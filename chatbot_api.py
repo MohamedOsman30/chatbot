@@ -74,6 +74,13 @@ def get_response(intents_list, intents_data):
     return "I'm not sure how to respond to that."
 
 # === API Route ===
+@app.route("/health", methods=["GET"])
+def health():
+    with model_lock:
+        return jsonify({
+            "status": "ready" if model else "not ready",
+            "error": model_load_error
+        }), 200 if model else 503
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
