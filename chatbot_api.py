@@ -4,7 +4,6 @@ import json
 import numpy as np
 import random
 import string
-import pickle
 from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
@@ -13,8 +12,6 @@ CORS(app)
 # === Load Resources ===
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
-WORDS_PATH = "words.pkl"
-CLASSES_PATH = "classes.pkl"
 
 # Load model
 try:
@@ -33,16 +30,17 @@ except Exception as e:
     print(f"[ERROR] Failed to load intents: {e}")
     intents = {"intents": []}
 
-# Load vocabulary and classes
-try:
-    with open(WORDS_PATH, "rb") as f:
-        words = pickle.load(f)
-    with open(CLASSES_PATH, "rb") as f:
-        classes = pickle.load(f)
-    print("[INFO] words.pkl and classes.pkl loaded.")
-except Exception as e:
-    print(f"[ERROR] Failed to load words/classes: {e}")
-    words, classes = [], []
+# Generate words and classes from intents
+words = sorted(set(
+    w.lower()
+    for intent in intents.get('intents', [])
+    for pattern in intent.get('patterns', [])
+    for w in pattern.translate(str.maketrans('', '', string.punctuation)).split()
+))
+classes = sorted(set(intent.get('tag') for intent in intents.get('intents', [])))
+
+print(f"[INFO] Vocabulary size: {len(words)}")
+print(f"[INFO] Number of classes: {len(classes)}")
 
 # === NLP Functions ===
 def clean_up_sentence(sentence):
@@ -60,6 +58,9 @@ def predict_class(sentence):
     if not model or not is_known_sentence(sentence, words):
         return []
     input_data = np.array([bow(sentence, words)])
+    if input_data.shape[1] != model.input_shape[1]:
+        print(f"[ERROR] Input shape mismatch: expected {model.input_shape[1]}, got {input_data.shape[1]}")
+        return []
     predictions = model.predict(input_data, verbose=0)[0]
     ERROR_THRESHOLD = 0.4
     results = [
@@ -109,6 +110,6 @@ def chat():
         print(f"[ERROR] Exception in /chat: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-# === Run the App ===
+# === Run App ===
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
