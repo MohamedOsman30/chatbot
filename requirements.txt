@@ -1,6 +1,5 @@
-flask
-flask-cors
-tensorflow-cpu
-numpy
-requests
-gunicorn
+flask==2.3.3
+flask-cors==4.0.0
+tensorflow-cpu==2.15.0
+numpy==1.24.4
+gunicorn==21.2.0
