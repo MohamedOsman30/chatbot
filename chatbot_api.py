@@ -4,21 +4,15 @@ import json
 import numpy as np
 import random
 import string
+import pickle
 from tensorflow.keras.models import load_model
 
-# === Load model and intents ===
+# === Load model and data ===
 model = load_model('chatbot_model.h5')
-
 with open('intents.json', encoding="utf8") as json_file:
     intents_data = json.load(json_file)
-
-# === Generate words and classes dynamically ===
-words = sorted(set([
-    w.lower()
-    for intent in intents_data['intents']
-    for pattern in intent['patterns']
-    for w in pattern.translate(str.maketrans('', '', string.punctuation)).split()
-]))
+with open('words.pkl', 'rb') as f:
+    words = pickle.load(f)  # Load the original vocabulary (163 words)
 classes = sorted(set([intent['tag'] for intent in intents_data['intents']]))
 
 # === NLP Functions ===
@@ -74,11 +68,15 @@ def chat():
         message = request.json.get("message", "").strip()
         if not message:
             return jsonify({"response": "No message provided."}), 400
+        # Debug: Log input and vocabulary size
+        print(f"Received message: {message}")
+        print(f"Vocabulary size: {len(words)}")
+        print(f"Model input shape: {model.input_shape}")
         intents_list = predict_class(message)
         response = get_response(intents_list, intents_data)
         return jsonify({"response": response}), 200
     except Exception as e:
-        print(f"[ERROR] /chat error: {e}")
+        print(f"[ERROR] /chat error: {str(e)}")
         return jsonify({"response": "Something went wrong."}), 500
 
 @app.route('/health', methods=['GET'])
