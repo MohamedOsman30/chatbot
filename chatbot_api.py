@@ -4,20 +4,22 @@ import json
 import numpy as np
 import random
 import string
-from tensorflow.keras.models import load_model
-import os
 import pickle
+from tensorflow.keras.models import load_model
+
 app = Flask(__name__)
 CORS(app)
 
-# === Paths to model and intents ===
+# === Paths to resources ===
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
-words = pickle.load(open('words.pkl', 'rb'))
-classes = pickle.load(open('classes.pkl', 'rb'))
-# === Load the model ===
+WORDS_PATH = "words.pkl"
+CLASSES_PATH = "classes.pkl"
+
+# === Load model and resources ===
 model = None
 model_load_error = None
+
 try:
     model = load_model(MODEL_PATH)
     print("[INFO] Model loaded successfully.")
@@ -25,8 +27,6 @@ except Exception as e:
     model_load_error = str(e)
     print(f"[ERROR] Failed to load model: {model_load_error}")
 
-# === Load intents file ===
-intents = {}
 try:
     with open(INTENTS_PATH, encoding="utf-8") as f:
         intents = json.load(f)
@@ -35,14 +35,15 @@ except Exception as e:
     print(f"[ERROR] Failed to load intents: {e}")
     intents = {"intents": []}
 
-# === Build vocabulary and classes ===
-words = sorted(set(
-    word.lower()
-    for intent in intents.get("intents", [])
-    for pattern in intent.get("patterns", [])
-    for word in pattern.translate(str.maketrans('', '', string.punctuation)).split()
-))
-classes = sorted(set(intent.get("tag") for intent in intents.get("intents", [])))
+try:
+    words = pickle.load(open(WORDS_PATH, "rb"))
+    classes = pickle.load(open(CLASSES_PATH, "rb"))
+    print("[INFO] Vocabulary and classes loaded successfully.")
+except Exception as e:
+    model_load_error = str(e)
+    print(f"[ERROR] Failed to load words/classes: {model_load_error}")
+    words = []
+    classes = []
 
 # === Preprocessing functions ===
 def clean_up_sentence(sentence):
@@ -78,7 +79,7 @@ def get_response(intents_list, intents_data):
             return random.choice(intent.get("responses", []))
     return "I'm not sure how to respond to that."
 
-# === Health check route ===
+# === Health Check Route ===
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({
@@ -86,8 +87,8 @@ def health():
         "error": model_load_error
     }), 200 if model else 503
 
-# === Chat route ===
-@app.route('/chat', methods=['POST'])
+# === Chat Route ===
+@app.route("/chat", methods=["POST"])
 def chat():
     try:
         data = request.get_json()
@@ -109,6 +110,6 @@ def chat():
         print(f"[ERROR] Exception in /chat: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-# === Start app for local debug (not used in production) ===
+# === Main (for local testing only) ===
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
