@@ -10,18 +10,22 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# === Paths to resources ===
+# === Paths to model and intents ===
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
 
-# === Load the model and intents file ===
+# === Load the model ===
+model = None
+model_load_error = None
 try:
     model = load_model(MODEL_PATH)
     print("[INFO] Model loaded successfully.")
 except Exception as e:
-    print(f"[ERROR] Failed to load model: {e}")
-    model = None
+    model_load_error = str(e)
+    print(f"[ERROR] Failed to load model: {model_load_error}")
 
+# === Load intents file ===
+intents = {}
 try:
     with open(INTENTS_PATH, encoding="utf-8") as f:
         intents = json.load(f)
@@ -52,7 +56,7 @@ def bow(sentence, vocab):
     return np.array([1 if word in sentence_words else 0 for word in vocab])
 
 def predict_class(sentence):
-    if not is_known_sentence(sentence, words):
+    if not model or not is_known_sentence(sentence, words):
         return []
     input_data = np.array([bow(sentence, words)])
     predictions = model.predict(input_data, verbose=0)[0]
@@ -73,14 +77,15 @@ def get_response(intents_list, intents_data):
             return random.choice(intent.get("responses", []))
     return "I'm not sure how to respond to that."
 
-# === API Route ===
+# === Health check route ===
 @app.route("/health", methods=["GET"])
 def health():
-    with model_lock:
-        return jsonify({
-            "status": "ready" if model else "not ready",
-            "error": model_load_error
-        }), 200 if model else 503
+    return jsonify({
+        "status": "ready" if model else "not ready",
+        "error": model_load_error
+    }), 200 if model else 503
+
+# === Chat route ===
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -89,7 +94,7 @@ def chat():
 
         message = data.get("message", "").strip()
         if not message:
-            return jsonify({"response": "No message provided, please send a valid message."}), 400
+            return jsonify({"response": "No message provided."}), 400
 
         predicted_intents = predict_class(message)
         print("[DEBUG] Predicted intents:", predicted_intents)
@@ -100,7 +105,9 @@ def chat():
         return jsonify({"response": response}), 200
 
     except Exception as e:
-        print(f"[ERROR] Exception during chat handling: {e}")
+        print(f"[ERROR] Exception in /chat: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-
+# === Start app for local debug (not used in production) ===
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)
