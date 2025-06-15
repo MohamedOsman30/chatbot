@@ -10,23 +10,21 @@ from tensorflow.keras.models import load_model
 app = Flask(__name__)
 CORS(app)
 
-# === Paths to resources ===
+# === Load Resources ===
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
 WORDS_PATH = "words.pkl"
 CLASSES_PATH = "classes.pkl"
 
-# === Load model and resources ===
-model = None
-model_load_error = None
-
+# Load model
 try:
     model = load_model(MODEL_PATH)
     print("[INFO] Model loaded successfully.")
 except Exception as e:
-    model_load_error = str(e)
-    print(f"[ERROR] Failed to load model: {model_load_error}")
+    print(f"[ERROR] Failed to load model: {e}")
+    model = None
 
+# Load intents
 try:
     with open(INTENTS_PATH, encoding="utf-8") as f:
         intents = json.load(f)
@@ -35,17 +33,18 @@ except Exception as e:
     print(f"[ERROR] Failed to load intents: {e}")
     intents = {"intents": []}
 
+# Load vocabulary and classes
 try:
-    words = pickle.load(open(WORDS_PATH, "rb"))
-    classes = pickle.load(open(CLASSES_PATH, "rb"))
-    print("[INFO] Vocabulary and classes loaded successfully.")
+    with open(WORDS_PATH, "rb") as f:
+        words = pickle.load(f)
+    with open(CLASSES_PATH, "rb") as f:
+        classes = pickle.load(f)
+    print("[INFO] words.pkl and classes.pkl loaded.")
 except Exception as e:
-    model_load_error = str(e)
-    print(f"[ERROR] Failed to load words/classes: {model_load_error}")
-    words = []
-    classes = []
+    print(f"[ERROR] Failed to load words/classes: {e}")
+    words, classes = [], []
 
-# === Preprocessing functions ===
+# === NLP Functions ===
 def clean_up_sentence(sentence):
     sentence = sentence.translate(str.maketrans('', '', string.punctuation))
     return [word.lower() for word in sentence.split()]
@@ -79,16 +78,16 @@ def get_response(intents_list, intents_data):
             return random.choice(intent.get("responses", []))
     return "I'm not sure how to respond to that."
 
-# === Health Check Route ===
+# === API Endpoints ===
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({
         "status": "ready" if model else "not ready",
-        "error": model_load_error
+        "vocab_size": len(words),
+        "classes_count": len(classes)
     }), 200 if model else 503
 
-# === Chat Route ===
-@app.route("/chat", methods=["POST"])
+@app.route('/chat', methods=['POST'])
 def chat():
     try:
         data = request.get_json()
@@ -96,7 +95,7 @@ def chat():
 
         message = data.get("message", "").strip()
         if not message:
-            return jsonify({"response": "No message provided."}), 400
+            return jsonify({"response": "No message provided, please send a valid message."}), 400
 
         predicted_intents = predict_class(message)
         print("[DEBUG] Predicted intents:", predicted_intents)
@@ -110,6 +109,6 @@ def chat():
         print(f"[ERROR] Exception in /chat: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-# === Main (for local testing only) ===
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+# === Run the App ===
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
