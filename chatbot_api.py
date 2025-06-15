@@ -5,34 +5,47 @@ import numpy as np
 import random
 import string
 from tensorflow.keras.models import load_model
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-# Load model and intents from local files
+# === Paths to resources ===
 MODEL_PATH = "chatbot_model.h5"
 INTENTS_PATH = "intents.json"
 
-model = load_model(MODEL_PATH)
-with open(INTENTS_PATH, encoding="utf-8") as f:
-    intents = json.load(f)
+# === Load the model and intents file ===
+try:
+    model = load_model(MODEL_PATH)
+    print("[INFO] Model loaded successfully.")
+except Exception as e:
+    print(f"[ERROR] Failed to load model: {e}")
+    model = None
 
-# Preprocess vocabulary and classes
+try:
+    with open(INTENTS_PATH, encoding="utf-8") as f:
+        intents = json.load(f)
+    print("[INFO] Intents loaded successfully.")
+except Exception as e:
+    print(f"[ERROR] Failed to load intents: {e}")
+    intents = {"intents": []}
+
+# === Build vocabulary and classes ===
 words = sorted(set(
     word.lower()
-    for intent in intents['intents']
-    for pattern in intent['patterns']
+    for intent in intents.get("intents", [])
+    for pattern in intent.get("patterns", [])
     for word in pattern.translate(str.maketrans('', '', string.punctuation)).split()
 ))
-classes = sorted(set(intent['tag'] for intent in intents['intents']))
+classes = sorted(set(intent.get("tag") for intent in intents.get("intents", [])))
 
-# Helper functions
+# === Preprocessing functions ===
 def clean_up_sentence(sentence):
     sentence = sentence.translate(str.maketrans('', '', string.punctuation))
     return [word.lower() for word in sentence.split()]
 
 def is_known_sentence(sentence, vocab):
-    return all(word in vocab for word in clean_up_sentence(sentence))
+    return any(word in vocab for word in clean_up_sentence(sentence))
 
 def bow(sentence, vocab):
     sentence_words = clean_up_sentence(sentence)
@@ -49,27 +62,38 @@ def predict_class(sentence):
         for i, prob in enumerate(predictions)
         if prob > ERROR_THRESHOLD
     ]
-    return sorted(results, key=lambda x: x["probability"], reverse=True)
+    return sorted(results, key=lambda x: float(x["probability"]), reverse=True)
 
 def get_response(intents_list, intents_data):
     if not intents_list:
         return "I'm sorry, I don't understand that."
     intent_tag = intents_list[0]['intent']
-    for intent in intents_data['intents']:
-        if intent['tag'] == intent_tag:
-            return random.choice(intent['responses'])
+    for intent in intents_data.get("intents", []):
+        if intent.get("tag") == intent_tag:
+            return random.choice(intent.get("responses", []))
     return "I'm not sure how to respond to that."
 
-# Chat API Route
+# === API Route ===
 @app.route('/chat', methods=['POST'])
 def chat():
-    data = request.get_json()
-    message = data.get("message", "").strip()
-    if not message:
-        return jsonify({"response": "No message provided, please send a valid message."}), 400
-    predicted_intents = predict_class(message)
-    response = get_response(predicted_intents, intents)
-    return jsonify({"response": response}), 200
+    try:
+        data = request.get_json()
+        print("[DEBUG] Received data:", data)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+        message = data.get("message", "").strip()
+        if not message:
+            return jsonify({"response": "No message provided, please send a valid message."}), 400
+
+        predicted_intents = predict_class(message)
+        print("[DEBUG] Predicted intents:", predicted_intents)
+
+        response = get_response(predicted_intents, intents)
+        print("[DEBUG] Response:", response)
+
+        return jsonify({"response": response}), 200
+
+    except Exception as e:
+        print(f"[ERROR] Exception during chat handling: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
